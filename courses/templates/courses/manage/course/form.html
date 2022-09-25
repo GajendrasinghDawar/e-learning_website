@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}
+{% if object %}
+Edit course "{{ object.title }}"
+{% else %}
+Create a new course
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class=' has-text-centered'>
+        <h2 class=' is-size-1'>Course info</h2>
+        <h1 class=' is-size-3 '>
+            {% if object %}
+            Edit course "{{ object.title }}"
+            {% else %}
+            Create a new course
+            {% endif %}
+        </h1>
+    </div>
+    <div class=" hero">
+        <form class="hero-body" method="post">
+            {% csrf_token %}
+            <div class="block">
+                {{ form.errors}}
+            </div>
+            <div class="block">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">{{ form.title.label_tag }}</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <p class="control is-expanded has-icons-left">
+                                <span class="icon is-small is-left ">
+
+                                    <i class="fa-solid fa-heading has-text-success"></i>
+                                </span>
+                                {{ form.title}}
+                            </p>
+                        </div>
+                        <div class="field-label is-normal">
+                            <label class="label">{{ form.slug.label_tag }}</label>
+                        </div>
+                        <div class="field">
+                            <p class="control is-expanded has-icons-left has-icons-right">
+                                <span class="icon is-small is-left ">
+                                    <i class="fa-solid fa-pen has-text-success"></i>
+                                </span>
+                                {{ form.slug}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">{{ form.subject.label_tag }}</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field is-narrow">
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    {{ form.subject}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">{{ form.overview.label_tag }}</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                {{ form.overview}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <!-- Left empty for spacing -->
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                {% if course.id%}
+                                <button class="button is-info">
+                                    Edit Course
+                                </button>
+                                {% else%}
+                                <button class="button is-info">
+                                    Create Course
+                                </button>
+                                {% endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block domready %}
+$("#id_title").keyup(function() {
+var Text = $(this).val();
+Text = Text.toLowerCase();
+Text = Text.replace(/[^a-zA-Z0-9]+/g,'-');
+$("#id_slug").val(Text);
+});
+{% endblock %}

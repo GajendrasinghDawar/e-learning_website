@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}
+{% if object %}
+Edit content "{{ object.title }}"
+{% else %}
+Add new content
+{% endif %}
+{% endblock %}
+{% block menu-list %}
+<p class="menu-label">
+    modules
+</p>
+{% for m in module.course.modules.all %}
+<ul class="menu-list" data-id="{{ m.id }}">
+    <li class='has-background-light '>
+        <a href="{% url 'module_content_list' m.id %}"><span>
+                Module <span class="order">{{ m.order|add:1 }}</span>
+                {{ m.title }}
+        </a>
+        {% comment %} class="is-active has-text-danger-dark" {% endcomment %}
+    </li>
+</ul>
+{% empty %}
+<ul>
+    <li class="menu-list">
+        <!-- No modules yet. -->
+    </li>
+</ul>
+{% endfor %}
+<p class="menu-label">
+    Course Administration
+</p>
+<ul class="menu-list is-underlined">
+    <li><a href="">Edit modules</a></li>
+</ul>
+{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-body">
+        <div class="is-flex is-flex-direction-row is-justify-content-center is-align-content-center">
+            <div class=" has-text-centered">
+                <h2>Course info</h2>
+                <h1 class='has-text-centered has-text-weight-bold'>
+                    {% if object %}
+                    Edit content "{{ object.title }}"
+                    {% else %}
+                    Add new content
+                    {% endif %}
+                </h1>
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">{{form.title.label_tag}}</label>
+                        <div class="control">
+                            {{form.title}}
+                        </div>
+                    </div>
+                    {% if form.content %}
+                    <div class="field">
+                        <label class="label">{{form.content.label_tag}}</label>
+                        <div class="control">
+                            {{form.content}}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if form.url %}
+                    <div class="field">
+                        <label class="label">{{form.url.label_tag}}</label>
+                        <div class="control">
+                            {{form.url}}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {%if form.file.initial%}
+                    <div class="file is-info has-name" id="file-get-name">
+                        <label class="file-label">
+                            <!-- {{form.file.url}} -->
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label">
+                                    <!-- Choose a &nbsp;{{form.file.initial.label_tag}} -->
+                                </span>
+                            </span>
+                            <span class="file-name">
+                                {{form.file.initial.name}}
+                                Your File
+                            </span>
+                        </label>
+                        {{form.file}}
+                    </div>
+                    {% else %}
+                    <div class="file is-info has-name" id="file-get-name">
+                        <label class="file-label">
+                            {{form.file}}
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label">
+                                    Choose a &nbsp;{{form.file.label_tag}}
+                                </span>
+                            </span>
+                            <span class="file-name">
+                                {{form.file.name}}
+                                Your File
+                            </span>
+                        </label>
+                    </div>
+                    {% endif %}
+                    <p class="mt-3"><input class='button' type="submit" value="Save content"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block Script %}
+window.onload = function() {
+const fileInput = document.querySelector('#file-get-name input[type=file]');
+fileInput.onchange = () => {
+if (fileInput.files.length > 0) {
+const fileName = document.querySelector('#file-get-name .file-name');
+fileName.textContent = fileInput.files[0].name;
+}
+}
+};
+{% endblock %}

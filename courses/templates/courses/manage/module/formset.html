@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}
+Edit "{{ course.title }}"
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class=' has-text-centered'>
+        <h2 class=' is-size-1'>Course info</h2>
+        <h1 class=' is-size-3 '>
+            Edit "{{ course.title }}"
+        </h1>
+    </div>
+    <div class=" hero  ">
+        <form class="container hero-body" method="post">
+            {% comment %} {{ formset }} {% endcomment %}
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+            {{ form.id }}
+            <div class="field">
+                <label class="label">{{ form.title.label_tag }}</label>
+                <div class="control">
+                    {{ form.title}}
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ form.description.label_tag }}</label>
+                <div class="control">
+                    {{ form.description}}
+                </div>
+            </div>
+            <label class="checkbox">
+
+                {{ form.DELETE.label_tag }}
+                {{ form.DELETE }}
+            </label>
+            {% endfor %}
+            <button type="submit" class="button is-primary ml-6" value="Save course">Save modules</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

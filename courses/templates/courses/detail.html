@@ -1,0 +1,60 @@
+{% extends "courses/list.html" %}
+{% block title %}
+{{ object.title }}
+{% endblock %}
+{% block menu-list %}
+{{ block.super }}
+{% endblock %}
+{% block content %}
+<div class="container is-flex">
+    <section class="hero">
+        <div class="hero-body  is-flex-direction-row is-justify-content-center is-align-content-center">
+            {% with subject=object.subject %}
+            <div>
+                <div class="block">
+                    <p class="title ">
+                        {{ object.title }}
+                    </p>
+                </div>
+                <div class="block">
+                    <span class="is-size-7">
+                        subject <a href="{% url 'course_list_subject' subject.slug %}" class="is-size-3 has-text-dark">
+                            {{ subject.title }}</a>.
+                    </span>
+                </div>
+                <div class="block">
+                    <span class="subtitle is-size-4">
+                        Overview of <a class="is-underlined" href="{% url 'course_detail' course.slug %}"> {{
+                            course.title }}</a>
+                    </span>
+                </div>
+            </div>
+            <div class="has-text-black-bis">
+                <div class="block">
+                    <p class="has-text-primary-dark is-size-4">
+                        {{ object.modules.count }} modules.
+                        Instructor: {{ object.owner.get_full_name }}
+                    </p>
+                </div>
+                <div class="block">
+                    <p class=" subtitle is-capitalized is-family-sans-serif is-size-5 ">
+                        {{ object.overview|linebreaks }}
+                    </p>
+                </div>
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'student_enroll_course' %}" method="post">
+                    {{ enroll_form }}
+                    {% csrf_token %}
+                    <input class="button is-info mt-3" type="submit" value="Enroll now">
+                </form>
+                {% else %}
+                <a href="{% url 'student_registration' %}" class="button is-info">
+                    Register to enroll
+                </a>
+                {% endif %}
+            </div>
+            {% endwith %}
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% if subject %}
+{{ subject.title }} courses
+{% else %}
+All courses
+{% endif %}
+{% endblock %}
+{% block menu-list %}
+<p class="menu-label has-text-weight-semibold mt-3  ">
+    Subjects
+</p>
+<ul class="overflow has-text-justified">
+    <li class="has-text-weight-bold is-underlined" {% if not subject %}class="has-text-success" {% endif %}> <a
+            href="{% url 'course_list' %}">All</a></li>
+    {% for s in subjects %}
+    <li>
+    <li class="menu-list has-text-weight-bold  mt-auto">{{ s.title }} </li>
+    <ul>
+        <li class='is-size-4 is-underlined'><a href="{% url 'course_list_subject' s.slug %}" {% if subject==s %}
+                class="has-text-success" {% endif %}>{{ s.total_courses }} courses</a></li>
+    </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
+{% block content %}
+<div class="container is-flex">
+    <section class="hero">
+        <div class="hero-body  is-flex-direction-row is-justify-content-center is-align-content-center">
+            <div class="block">
+                <p class="title ">
+                    {% if subject %}
+                    {{ subject.title }} courses
+                    {% else %}
+                    All courses
+                    {% endif %}
+                </p>
+            </div>
+            {% for course in courses %}
+            {% with subject=course.subject %}
+            <div class="block">
+                <h3>
+                    <a class='has-text-link is-underlined' href="{% url 'course_detail' course.slug %}">
+                        {{ course.title }}
+                    </a>
+                </h3>
+            </div>
+            <div class="block">
+                <p class="subtitle ">
+                    <a href="{% url 'course_list_subject' subject.slug %}" class="has-text-dark "> {{subject}} </a>.
+                    {{ course.total_modules }} modules.
+                    Instructor: {{ course.owner.get_full_name }}
+                </p>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

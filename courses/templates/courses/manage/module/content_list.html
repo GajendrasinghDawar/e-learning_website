@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load course %}
+{% block title %}
+Module {{ module.order|add:1 }}: {{ module.title }}
+{% endblock %}
+{% block menu-list %}
+<p class="menu-label">
+    modules
+</p>
+<div id="modules">
+    {% for m in module.course.modules.all %}
+    <ul class="menu-list" data-id="{{ m.id }}">
+        <li class='has-background-light '>
+            <a href="{% url 'module_content_list' m.id %}"><span>
+                    Module <span class="order">{{ m.order|add:1 }}</span>
+                    {{ m.title | truncatechars:28 }}
+            </a>
+            {% comment %} class="is-active has-text-danger-dark" {% endcomment %}
+        </li>
+    </ul>
+    {% empty %}
+    <ul>
+        <li class="menu-list">
+            No modules yet.
+        </li>
+    </ul>
+    {% endfor %}
+</div>
+<p class="menu-label">
+    Course Administration
+</p>
+<ul class="menu-list is-underlined">
+    <li><a href="{% url 'course_module_update' module.course.id %}">Edit modules</a></li>
+</ul>
+{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-body">
+        <div class="is-flex is-flex-direction-row is-justify-content-center is-align-content-center">
+
+            <div class="container">
+                <h1 class="card-header-title is-size-1 has-text-primary-dark">Course "{{ module.course.title }}"</h1>
+                {% with course=module.course %}
+                <div class="card-content has-text-centered">
+                    <h2 class="title">Module {{ module.order|add:1 }}: {{ module.title }}</h2>
+                    <h3 class='is-size-5'>Module contents:</h3>
+                    {% for content in module.contents.all %}
+                    <div data-id="{{ content.id }}" id="module-contents">
+                        {% with item=content.item %}
+                        <p>{{ item }} ({{item|model_name}})</p>
+                        <a href="{% url 'module_content_update' module.id item|model_name item.id %}">Edit</a>
+                        <form action="{% url 'module_content_delete' content.id %}" method="post">
+                            <input type="submit" value="Delete">
+                            {% csrf_token %}
+                        </form>
+                        {% endwith %}
+                    </div>
+                    {% empty %}
+                    <p class='is-size-6'>This module has no contents yet.</p>
+                    {% endfor %}
+                </div>
+                <div class="card">
+                    <h3 class='has-text-centered has-text-weight-bold'>Add new content</h3>
+                    <footer class="card-footer mx-4">
+                        <a href='{% url ' module_content_create' module.id "text" %}' class="card-footer-item">Text</a>
+                        <a href='{% url ' module_content_create' module.id "image" %}'
+                            class="card-footer-item">Image</a>
+                        <a href='{% url ' module_content_create' module.id "video" %}'
+                            class="card-footer-item">Video</a>
+                        <a href='{% url ' module_content_create' module.id "file" %}' class="card-footer-item">File</a>
+                    </footer>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+{% block domready %}
+$('#modules').sortable({
+stop: function(event, ui) {
+modules_order = {};
+$('#modules').children().each(function(){
+// update the order field
+
+$(this).find('.order').text($(this).index() + 1);
+// associate the module's id with its order
+modules_order[$(this).data('id')] = $(this).index();
+});
+$.ajax({
+type: 'POST',
+url: '{% url "module_order" %}',
+contentType: 'application/json; charset=utf-8',
+dataType: 'json',
+data: JSON.stringify(modules_order)
+});
+}
+});
+$('#module-contents').sortable({
+stop: function(event, ui) {
+contents_order = {};
+$('#module-contents').children().each(function(){
+// associate the module's id with its order
+contents_order[$(this).data('id')] = $(this).index();
+});
+$.ajax({
+type: 'POST',
+url: '{% url "content_order" %}',
+contentType: 'application/json; charset=utf-8',
+dataType: 'json',
+data: JSON.stringify(contents_order),
+});
+}
+});
+{% endblock %}

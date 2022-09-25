@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Chat room for "{{ course.title }}"{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="hero ">
+        <div class="hero-body">
+            <div class=" mybox box mx-auto is-shadowless" id="chat">
+                {% if exception %}
+                <strong class="has-text-danger-dark is-size-4" style="position: sticky; top: 0;">You should login first
+                    to get in .🧐
+                </strong>
+                {%else%}
+                <strong class="has-text-grey-light" style="position: sticky; top: 0;">You're in a Chat box.😎
+                </strong>
+                {% endif %}
+            </div>
+            <nav class="bulma-center-mixin-parent level">
+                <!-- left side for spacing -->
+                <div class="level-left">
+                    <div class="level-item">
+                    </div>
+                    <div class="level-item">
+                    </div>
+                </div>
+                <!-- Right side -->
+                <div class="level-right">
+                    <div class="level-item">
+                        <div class="field is-grouped">
+                            <p class="control is-expanded ">
+                                <input class="input is-shadowless" id="chat-message-input" type="text"
+                                    placeholder="talk with ?">
+                            </p>
+                            <p class="control">
+                                <a class="button has-text-success" id="chat-message-submit" type="submit" value="Send">
+                                    Text Me !
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+{% block domready %}
+var url = 'ws://' + window.location.host +
+'/ws/chat/room/' + '{{ course.id }}/';
+var chatSocket = new WebSocket(url);
+
+chatSocket.onmessage = function(e) {
+var data = JSON.parse(e.data);
+var message = data.message;
+
+var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+var datetime = new Date(data.datetime).toLocaleString('en', dateOptions);
+
+var isMe = data.user === '{{ request.user }}';
+var source = isMe ? 'has-text-right is-clearfix' : ' is-clearfix has-text-left';
+var name = isMe ? 'You' : data.user;
+
+var $chat = $('#chat');
+
+$chat.append('<div class="' + source + '">' +
+    '<strong class="has-text-success">' + '<span class="is-size-3">🤗</span>' + name + '</strong> ' +
+    '<span class="has-text-link">' + '&nbsp;' + datetime + '</span><br>' + '<span class="is-size-4">' +
+        message+ '</span>'
+    +
+    '</div>');
+
+$chat.scrollTop($chat[0].scrollHeight);
+};
+chatSocket.onclose = function(e) {
+console.error('Chat socket closed unexpectedly');
+};
+var $input = $('#chat-message-input');
+var $submit = $('#chat-message-submit');
+
+$submit.click(function() {
+var message = $input.val();
+if(message) {
+// send message in JSON format
+chatSocket.send(JSON.stringify({'message': message}));
+
+// clear input
+$input.val('');
+
+// return focus
+$input.focus();
+
+}
+});
+
+$input.focus();
+$input.keyup(function(e) {
+if (e.which === 13) {
+// submit with enter / return key
+$submit.click();
+}
+});
+{% endblock %}

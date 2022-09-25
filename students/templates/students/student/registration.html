@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% block title %} Sign up {% endblock %} {% block
+menu-list %}
+
+<p class="menu-label">Subjects</p>
+<ul class="menu-list overflow">
+  <li>
+    <a href="{% url 'course_list' %}" {% if not subject %}class="is-active" {% endif %}>All</a>
+  </li>
+</ul>
+{% endblock %} {% block content %}
+<div class="container mt-3">
+  <section class="hero">
+    <div class="hero-body ml-auto mr-auto">
+      <div class="has-text-centered">
+        <div class="field">
+          {% if form.errors%}
+          <div class="notification is-danger">
+            <button class="delete"></button>
+            {% if form.errors %} {% for field in form %} {% for error in
+            field.errors %}
+            <p>{{ error }}</p>
+            {% endfor %} {% endfor %} {% endif %}
+          </div>
+          {% else %}
+          <p class="is-link title">
+            Please, Fill in the Form to be registered .
+          </p>
+          {% endif %}
+        </div>
+        <form class="mt-auto" method="post">
+          {% csrf_token %}
+          <div class="field-body"></div>
+
+          <div class="field-body is-grouped is-grouped-multiline">
+            <div class="field">
+              <label class="label">{{ form.username.label_tag }}</label>
+              <p class="control is-expanded has-icons-left">
+                {{ form.username }}
+                <span class="icon is-small is-left">
+                  <i class="fas fa-user"></i>
+                </span>
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">{{ form.password1.label_tag }}</label>
+              <p class="control has-icons-left">
+                {{ form.password1}}
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">{{ form.password2.label_tag }}</label>
+              <p class="control has-icons-left">
+                {{ form.password2}}
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </p>
+            </div>
+          </div>
+          <div class="field mt-3">
+            <p class="control">
+              <button class="button is-info">Create Account !</button>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %} {% block Script %} document.addEventListener('DOMContentLoaded',
+() => { (document.querySelectorAll('.notification .delete') ||
+[]).forEach(($delete) => { const $notification = $delete.parentNode;
+$delete.addEventListener('click', () => {
+$notification.parentNode.removeChild($notification); }); }); }); {% endblock %}

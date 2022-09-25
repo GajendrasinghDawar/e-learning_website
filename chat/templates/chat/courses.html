@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Active Chat Rooms{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="hero ">
+        <div class="hero-body mx-auto  has-text-centered">
+            <div class=" block">
+                <p class="is-size-1  has-text-black-bis">
+                    Active Chat Rooms
+                </p>
+            </div>
+            {% for course in object_list %}
+            <div class="block">
+                <p class="title has-text-link-dark">
+                    {{ course.title }}
+                </p>
+                <p><a class="button has-text-success" href="{% url 'chat:course_chat_room' course.id %}">
+                        get into room</a></p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

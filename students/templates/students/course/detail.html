@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load cache %}
+{% load embed_video_tags %}
+
+{% block title %}
+{{ object.title }}
+{% endblock %}
+
+{% block menu-list %}
+<p class="menu-label has-text-weight-semibold mt-3  ">
+    Modules
+</p>
+{% for m in object.modules.all %}
+<ul class="menu-list">
+    <li>
+    <li class="menu-list has-text-weight-bold  mt-auto">Module {{ m.order|add:1 }} </li>
+    <ul class="">
+        <li><a {% if m==module %}class="is-active " {% endif %}
+                href="{% url 'student_course_detail_module' object.id m.id %}"> {{ m.title | truncatewords:5 }}</a></li>
+    </ul>
+    </li>
+</ul>
+{% empty %}
+<div class="block">
+    <li class="subtitle">No modules yet.</li>
+</div>
+{% endfor %}
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <section class="hero has-text-centered">
+        <div class="hero-body ">
+            <div class="block">
+                <p class="title">
+                    {{ module.title | title}}
+                </p>
+            </div>
+            <div class="block">
+                {% for content in module.contents.all %}
+                {% with item=content.item %}
+                <h2 class="subtitle">{{ item.title |title}}</h2>
+                {{ item.render }}
+                {% endwith %}
+                {% endfor %}
+                {% cache 1 module_contents module %} {% endcache %}
+            </div>
+        </div>
+</div>
+</section>
+</div>
+{% endblock %}

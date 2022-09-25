@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My courses{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-body">
+        <div class=" has-text-centered">
+            <strong class="is-size-1 has-text-success">
+                &lt All Offered Courses /&gt
+            </strong>
+            <div class=" container">
+                {% for course in object_list %}
+                <div class="box mt-0 ml-2">
+                    <div class="block subtitle">
+                        <h3>{{ course.title }}</h3>
+                    </div>
+                    <div class="block">
+                        <p>
+                            <a href="{% url 'course_edit' course.id %}" class="button">Edit</a>
+                            <a href="{% url 'course_delete' course.id %}" class="button">Delete</a>
+                            <a href="{% url 'course_module_update' course.id %}" class="button">Edit modules</a>
+                            {% if course.modules.count > 0 %}
+                            <a class="button" href="{% url 'module_content_list' course.modules.first.id %}">
+                                Manage contents</a>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                {% empty %}
+                <blockquote class="is-size-3 2rem">You haven't created any courses yet.</blockquote>
+                {% endfor %}
+                <a href="{% url 'course_create' %}" class="button mt-5 is-info">create New course</a>
+            </div>
+        </div>
+</section>
+{% endblock %}
